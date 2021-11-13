@@ -5,6 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
+	log "github.com/sirupsen/logrus"
 )
 
 // Handler -
@@ -32,6 +34,11 @@ func New() *Handler {
 func (h *Handler) SetupRoutes() {
 	h.Router = mux.NewRouter()
 
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:8000", "http://localhost:1313", "https://tutorialedge.net"},
+		AllowCredentials: true,
+	})
+	handler := c.Handler(h.Router)
 	h.Router.HandleFunc("/api/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 		w.WriteHeader(http.StatusOK)
@@ -41,6 +48,10 @@ func (h *Handler) SetupRoutes() {
 	})
 
 	h.Router.HandleFunc("/v1/execute", h.ExecuteChallenge).Methods("POST")
+	if err := http.ListenAndServe(":5000", handler); err != nil {
+		log.Error("Failed to set up server")
+	}
+
 }
 
 func sendErrorResponse(w http.ResponseWriter, message string, err error) {
