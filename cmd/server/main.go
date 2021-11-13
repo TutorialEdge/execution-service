@@ -3,7 +3,6 @@ package main
 import (
 	"net/http"
 
-	"github.com/TutorialEdge/execution-service/internal/search"
 	transportHTTP "github.com/TutorialEdge/execution-service/internal/transport/http"
 
 	log "github.com/sirupsen/logrus"
@@ -11,11 +10,7 @@ import (
 
 // Setup instantiates the app
 func Setup() error {
-
-	searchService := search.New()
-	httpHandler := transportHTTP.New(
-		searchService,
-	)
+	httpHandler := transportHTTP.New()
 	httpHandler.SetupRoutes()
 
 	if err := http.ListenAndServe(":5000", httpHandler.Router); err != nil {
