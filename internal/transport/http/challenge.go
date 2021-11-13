@@ -17,6 +17,7 @@ import (
 // been sent to API from a snippet and executing it before
 // returning the response
 func (h Handler) ExecuteChallenge(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	log.Info("Execute Challenge Endpoint Hit")
 
 	req := new(challenge.ChallengeRequest)
