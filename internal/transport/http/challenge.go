@@ -1,33 +1,28 @@
 package http
 
 import (
+	"encoding/json"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"time"
 
 	"github.com/TutorialEdge/execution-service/internal/challenge"
-	"github.com/gofiber/fiber/v2"
 	log "github.com/sirupsen/logrus"
 )
-
-// Response a response object
-// used for returning an array of challenges
-type Response struct {
-	Challenges []challenge.Challenge `json:"challenges"`
-	Count      int                   `json:"count"`
-}
 
 // ChallengeCode does the job of taking the Go code that has
 // been sent to API from a snippet and executing it before
 // returning the response
-func (h Handler) ExecuteChallenge(c *fiber.Ctx) error {
+func (h Handler) ExecuteChallenge(w http.ResponseWriter, r *http.Request) {
 	log.Info("Execute Challenge Endpoint Hit")
 
 	req := new(challenge.ChallengeRequest)
-	if err := c.BodyParser(req); err != nil {
-		log.Fatal(err)
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		sendErrorResponse(w, "Failed to decode JSON Body", err)
+		return
 	}
 
 	dir, err := ioutil.TempDir("/tmp", "challenge*")
@@ -86,5 +81,7 @@ func (h Handler) ExecuteChallenge(c *fiber.Ctx) error {
 
 	log.Infof("go run output: %s\n", string(out))
 
-	return c.JSON(response)
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		panic(err)
+	}
 }

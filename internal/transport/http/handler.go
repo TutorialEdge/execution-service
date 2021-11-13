@@ -1,13 +1,23 @@
 package http
 
 import (
+	"encoding/json"
+	"net/http"
+
 	"github.com/TutorialEdge/execution-service/internal/search"
-	"github.com/gofiber/fiber/v2"
+	"github.com/gorilla/mux"
 )
 
 // Handler -
 type Handler struct {
+	Router        *mux.Router
 	SearchService search.Service
+}
+
+// Response objecgi
+type Response struct {
+	Message string
+	Error   string
 }
 
 // ErrorResponse -
@@ -25,23 +35,24 @@ func New(
 }
 
 // SetupRoutes sets up all the routes for the app
-func (h Handler) SetupRoutes(app *fiber.App) {
+func (h Handler) SetupRoutes() {
+	h.Router = mux.NewRouter()
 
-	app.Get("/.well-known/acme-challenge/4msn8PtbRxmoqZyG7ZSj-sZnK9nYh9Y2E79CIwZsirc", func(c *fiber.Ctx) error {
-		return c.Status(200).SendString("4msn8PtbRxmoqZyG7ZSj-sZnK9nYh9Y2E79CIwZsirc.OPUUBETd9RrcpcPnbjR-M-ZFaKPZrbwI_6aDIpwUXd0")
-	})
-	app.Get("/.well-known/acme-challenge/Po4LqaiYo__kif1nfgD6Zg1hxiHy_sluuKzasLjnJok", func(c *fiber.Ctx) error {
-		return c.Status(200).SendString("Po4LqaiYo__kif1nfgD6Zg1hxiHy_sluuKzasLjnJok.OPUUBETd9RrcpcPnbjR-M-ZFaKPZrbwI_6aDIpwUXd0")
-	})
-	app.Get("/.well-known/acme-challenge/tvEreqlNeyC9C9Cw0lrIQAQQbXu-k10vD0qfXQtDGlc", func(c *fiber.Ctx) error {
-		return c.Status(200).SendString("tvEreqlNeyC9C9Cw0lrIQAQQbXu-k10vD0qfXQtDGlc.OPUUBETd9RrcpcPnbjR-M-ZFaKPZrbwI_6aDIpwUXd0")
+	h.Router.HandleFunc("/api/health", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+		w.WriteHeader(http.StatusOK)
+		if err := json.NewEncoder(w).Encode(Response{Message: "I am Alive!"}); err != nil {
+			panic(err)
+		}
 	})
 
-	app.Get("/v1/health", func(c *fiber.Ctx) error {
-		return c.Status(200).SendString("Healthy")
-	})
-	app.Post("/v1/execute", h.ExecuteChallenge) // ExecuteChallenge
+	h.Router.HandleFunc("/v1/execute", h.ExecuteChallenge).Methods("POST")
+	h.Router.HandleFunc("/v1/search", h.Search).Methods("POST")
+}
 
-	searchGroup := app.Group("/v1/search")
-	searchGroup.Post("/", h.Search)
+func sendErrorResponse(w http.ResponseWriter, message string, err error) {
+	w.WriteHeader(http.StatusInternalServerError)
+	if err := json.NewEncoder(w).Encode(Response{Message: message, Error: err.Error()}); err != nil {
+		panic(err)
+	}
 }

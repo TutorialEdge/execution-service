@@ -1,12 +1,22 @@
 package http
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"encoding/json"
+	"net/http"
 
-func (h *Handler) Search(c *fiber.Ctx) error {
-	query := c.Query("query")
+	"github.com/gorilla/mux"
+)
+
+func (h *Handler) Search(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	query := vars["query"]
 	results, err := h.SearchService.Search(query)
 	if err != nil {
-		return c.SendString("error")
+		sendErrorResponse(w, "Unable to parse UINT from ID", err)
+		return
 	}
-	return c.JSON(results)
+
+	if err := json.NewEncoder(w).Encode(results); err != nil {
+		panic(err)
+	}
 }
