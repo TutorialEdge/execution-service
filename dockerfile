@@ -1,5 +1,5 @@
 # Our builder image used to build the Go binary
-FROM golang:1.15.0-alpine as builder
+FROM golang:1.16.3-alpine as builder
 RUN mkdir /app
 ADD . /app
 WORKDIR /app
