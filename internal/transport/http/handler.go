@@ -37,6 +37,7 @@ func (h *Handler) SetupRoutes() {
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:1313", "https://tutorialedge.net", "https://api.tutorialedge.app"},
 		AllowCredentials: true,
+		AllowedHeaders:   []string{"*"},
 		// Enable Debugging for testing, consider disabling in production
 		Debug: true,
 	})
