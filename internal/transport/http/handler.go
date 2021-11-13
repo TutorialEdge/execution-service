@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -32,6 +33,15 @@ func New() *Handler {
 // SetupRoutes sets up all the routes for the app
 func (h *Handler) SetupRoutes() {
 	h.Router = mux.NewRouter()
+
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:1313", "https://tutorialedge.net", "https://api.tutorialedge.app"},
+		AllowCredentials: true,
+		// Enable Debugging for testing, consider disabling in production
+		Debug: true,
+	})
+	handler := c.Handler(h.Router)
+
 	h.Router.Use(mux.CORSMethodMiddleware(h.Router))
 	h.Router.HandleFunc("/api/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
@@ -42,7 +52,7 @@ func (h *Handler) SetupRoutes() {
 	})
 
 	h.Router.HandleFunc("/v1/execute", h.ExecuteChallenge).Methods("POST")
-	if err := http.ListenAndServe(":5000", h.Router); err != nil {
+	if err := http.ListenAndServe(":5000", handler); err != nil {
 		log.Error("Failed to set up server")
 	}
 
