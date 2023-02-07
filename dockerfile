@@ -10,7 +10,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o main cmd/server/main.go
 # Our production image used to run our app
 FROM alpine:latest
 RUN apk --no-cache add ca-certificates
-RUN apk add --no-cache git make musl-dev go wkhtmltopdf
+RUN apk add --no-cache git make musl-dev go
 COPY --from=builder /app/main .
 # Configure Go
 ENV GOROOT /usr/lib/go
