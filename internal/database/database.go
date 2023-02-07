@@ -1,11 +1,7 @@
 package database
 
-import (
-	"github.com/jmoiron/sqlx"
-)
-
 type Store struct {
-	db *sqlx.DB
+	// db *sqlx.DB
 }
 
 func New() *Store {
