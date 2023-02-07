@@ -8,6 +8,7 @@ require (
 	github.com/gofiber/fiber/v2 v2.21.0
 	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/jinzhu/gorm v1.9.16
+	github.com/jmoiron/sqlx v1.3.5 // indirect
 	github.com/rs/cors v1.8.0 // indirect
 	github.com/sirupsen/logrus v1.8.1
 )
