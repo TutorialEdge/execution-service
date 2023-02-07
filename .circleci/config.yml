@@ -14,7 +14,7 @@ jobs:
       - checkout
       - run:
           name: "Building the code"
-          command: go build -o main
+          command: go build ./...
   
   race-check-service:
     docker:
