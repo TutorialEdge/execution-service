@@ -72,7 +72,7 @@ jobs:
           command: |
             curl -L https://fly.io/install.sh | sh
             /home/circleci/.fly/bin/flyctl deploy
-            
+
 workflows:
   main:
     jobs:
@@ -81,3 +81,4 @@ workflows:
       - lint-service
       - race-check-service
       - benchmark-service
+      - deploy-service
