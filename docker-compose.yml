@@ -27,7 +27,7 @@ services:
       DB_PORT: "5432"
       SSL_MODE: "disable"
     ports:
-      - "8080:8080"
+      - "8000:8000"
     depends_on:
       - db
     networks:

@@ -53,7 +53,7 @@ func (h *Handler) SetupRoutes() {
 	})
 
 	h.Router.HandleFunc("/v1/execute", h.ExecuteChallenge).Methods("POST")
-	if err := http.ListenAndServe(":5000", handler); err != nil {
+	if err := http.ListenAndServe(":8000", handler); err != nil {
 		log.Error("Failed to set up server")
 	}
 

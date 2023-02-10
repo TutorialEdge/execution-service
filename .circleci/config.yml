@@ -62,6 +62,17 @@ jobs:
           command: |
             golangci-lint run --timeout 120s
 
+  deploy-service:
+    docker:
+      - image: cimg/go:1.19.3
+    steps:
+      - checkout
+      - run:
+          name: "Fly Deploy"
+          command: |
+            curl -L https://fly.io/install.sh | sh
+            /home/circleci/.fly/bin/flyctl deploy
+            
 workflows:
   main:
     jobs:
